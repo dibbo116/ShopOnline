@@ -50,6 +50,10 @@ PHP Files:
 •	Redirects users back to login page based on session validation.
 12.	logout.php
 •	Handles user session termination and logout processes.
+
+
+
+
 Instructions for Use
 Customer Workflow
 1.	Registration
