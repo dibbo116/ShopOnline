@@ -2,6 +2,8 @@ BuyOnline - Project 2 Documentation
 
 URL:
 •	To access the project, use the following link: https://mercury.swin.edu.au/cos80021/s105299366/Project2/buyonline.htm
+
+
 List of Files:
 HTML files:
 1.	buyonline.htm
@@ -55,6 +57,7 @@ PHP Files:
 
 
 Instructions for Use
+
 Customer Workflow
 1.	Registration
 •	Customers should first register by navigating to register.htm. Once registered, they can log in via login.htm.
@@ -64,6 +67,8 @@ Customer Workflow
 •	If a customer cancels their purchase, the system will automatically update the inventory via cancel_purchase.php
 
 3.	When logging out via logout.htm, the system ensures that any pending items in the cart are canceled before terminating the session.
+
+   
 Manager Workflow
 1.	Login
 •	Managers access their functionalities via mlogin.htm. This allows them to manage inventory and process customer orders.
