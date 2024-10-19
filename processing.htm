@@ -1,0 +1,142 @@
+<!-- Name : Dibbo Barua Chamak
+    Student ID : 105299366  -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Process Sold Items - BuyOnline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+                /* Styling for navigation links */
+        .menu-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .menu-links a:hover {
+            text-decoration: underline;
+        }
+        .button {
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            background-color: #007bff;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function checkLogin() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "redirect.php", true);
+            xhr.onload = function() {
+                if (xhr.status === 403) {
+                    // If unauthorized, redirect to login page
+                    window.location.href = "mlogin.htm";
+                }
+                if (xhr.status ===200){
+                    // If authorized, continue processing sold items
+                    fetchSoldItems();
+                }
+            };
+            xhr.send();
+        }
+        // Function to fetch sold items from XML
+        function fetchSoldItems() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "get_goods_data.php", true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const xml = xhr.responseXML;
+                    const items = xml.getElementsByTagName('item');
+                    const tableBody = document.getElementById('sold-items-table-body');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    for (let i = 0; i < items.length; i++) {
+                        const itemNumber = items[i].getElementsByTagName('item_number')[0].textContent;
+                        const itemName = items[i].getElementsByTagName('item_name')[0].textContent;
+                        const itemPrice = parseFloat(items[i].getElementsByTagName('item_price')[0].textContent).toFixed(2);
+                        const quantityAvailable = items[i].getElementsByTagName('quantity_available')[0].textContent;
+                        const quantityOnHold = items[i].getElementsByTagName('quantity_on_hold')[0].textContent;
+                        const quantitySold = items[i].getElementsByTagName('quantity_sold')[0].textContent;
+
+                        if (quantitySold > 0) {
+                            const row = `
+                                <tr>
+                                    <td>${itemNumber}</td>
+                                    <td>${itemName}</td>
+                                    <td>$${itemPrice}</td>
+                                    <td>${quantityAvailable}</td>
+                                    <td>${quantityOnHold}</td>
+                                    <td>${quantitySold}</td>
+                                </tr>
+                            `;
+                            tableBody.innerHTML += row;
+                        }
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        // Function to process sold items
+        function processItems() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "process_items.php", true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert(xhr.responseText); // Display success message
+                    fetchSoldItems(); // Refresh sold items
+                }
+            };
+            xhr.send();
+        }
+
+        // Fetch sold items on page load
+        window.onload = function() {
+            checkLogin();
+        };
+    </script>
+</head>
+<body>
+    <div class="menu-links">
+        <a href="listing.htm">Listing</a>
+        <a href="processing.htm">Processing</a>
+        <a href="logout.htm">Logout</a>
+    </div>
+    <h1>Process Sold Items</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Item Number</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity Available</th>
+                <th>Quantity on Hold</th>
+                <th>Quantity Sold</th>
+            </tr>
+        </thead>
+        <tbody id="sold-items-table-body">
+            <!-- Sold items will be populated here -->
+        </tbody>
+    </table>
+    <button class="button" onclick="processItems()">Process</button>
+
+</body>
+</html>

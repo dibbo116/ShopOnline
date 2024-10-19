@@ -1,0 +1,46 @@
+<!-- Name : Dibbo Barua Chamak
+    Student ID : 105299366  -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logout - BuyOnline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .message-container {
+            display: inline-block;
+            text-align: left;
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+    </style>
+    <script>
+        // Function to handle the logout process and fetch the user ID
+        function handleLogout() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'logout.php', true); // Request to PHP endpoint for logout
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // Display the returned message from logout.php
+                    document.getElementById('user-id').innerText = xhr.responseText;
+                }
+            };
+            xhr.send();
+        }
+
+        window.onload = handleLogout; // Trigger the logout process when the page loads
+    </script>
+</head>
+<body>
+    <div class="message-container">
+        <h2>Thank you for using BuyOnline!</h2>
+        <p>You have successfully logged out.</p>
+        <p id="user-id"></p> <!-- This div will display either Manager ID or Customer ID -->
+    </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<customers>
+  <customer>
+    <customer_id>C002</customer_id>
+    <first_name>Dibbo</first_name>
+    <surname>Chamak</surname>
+    <email>dibbo.barua16@gmail.com</email>
+    <password>1234</password>
+    <phone>04 34044855</phone>
+  </customer>
+  <customer>
+    <customer_id>C003</customer_id>
+    <first_name>Test</first_name>
+    <surname>1</surname>
+    <email>Test@gmail.com</email>
+    <password>1234</password>
+    <phone>04 34044853</phone>
+  </customer>
+  <customer>
+    <customer_id>C004</customer_id>
+    <first_name>Test</first_name>
+    <surname>2</surname>
+    <email>Test2@gmail.com</email>
+    <password>1234</password>
+    <phone>04 34044851</phone>
+  </customer>
+  <customer>
+    <customer_id>C005</customer_id>
+    <first_name>Customer</first_name>
+    <surname>1</surname>
+    <email>customer@gmail.com</email>
+    <password>1234</password>
+    <phone>04 34044988</phone>
+  </customer>
+</customers>

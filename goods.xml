@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<items>
+  <item>
+    <item_number>ITM001</item_number>
+    <item_name>Iphone 16 Pro max</item_name>
+    <item_price>2400</item_price>
+    <quantity_available>100</quantity_available>
+    <quantity_on_hold>0</quantity_on_hold>
+    <quantity_sold>0</quantity_sold>
+    <description>Black Titan</description>
+  </item>
+  <item>
+    <item_number>ITM002</item_number>
+    <item_name>Motorola</item_name>
+    <item_price>2400</item_price>
+    <quantity_available>105</quantity_available>
+    <quantity_on_hold>0</quantity_on_hold>
+    <quantity_sold>0</quantity_sold>
+    <description>Black Red</description>
+  </item>
+  <item>
+    <item_number>ITM003</item_number>
+    <item_name>Test Mobile</item_name>
+    <item_price>3000</item_price>
+    <quantity_available>9</quantity_available>
+    <quantity_on_hold>0</quantity_on_hold>
+    <quantity_sold>0</quantity_sold>
+    <description>Purple Red</description>
+  </item>
+  <item>
+    <item_number>ITM004</item_number>
+    <item_name>Test_1</item_name>
+    <item_price>7000</item_price>
+    <quantity_available>4</quantity_available>
+    <quantity_on_hold>0</quantity_on_hold>
+    <quantity_sold>0</quantity_sold>
+    <description>Purple Red Balck</description>
+  </item>
+  <item>
+    <item_number>ITM005</item_number>
+    <item_name>Test_2</item_name>
+    <item_price>4000</item_price>
+    <quantity_available>6</quantity_available>
+    <quantity_on_hold>0</quantity_on_hold>
+    <quantity_sold>0</quantity_sold>
+    <description>Purple Red Black White</description>
+  </item>
+</items>

@@ -1,0 +1,277 @@
+<!-- Name : Dibbo Barua Chamak
+    Student ID : 105299366  -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buying Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .button {
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+        .add-to-cart {
+            background-color: #28a745;
+        }
+        .remove-from-cart {
+            background-color: #dc3545;
+        }
+        .confirm-purchase {
+            background-color: #007bff;
+            margin-top: 20px;
+        }
+        .cancel-purchase {
+            background-color: #ffc107;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        let shoppingCart = {};
+
+        // Function to fetch XML data every 10 seconds
+        function fetchCatalog() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "get_goods_data.php", true); 
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const xml = xhr.responseXML;
+                    const items = xml.getElementsByTagName('item');
+                    const catalogTableBody = document.getElementById('catalog-table-body');
+                    catalogTableBody.innerHTML = ''; // Clear existing rows
+
+                    for (let i = 0; i < items.length; i++) {
+                        const quantityAvailable = parseInt(items[i].getElementsByTagName('quantity_available')[0].textContent);
+                        if (quantityAvailable > 0) {
+                            const itemNumber = items[i].getElementsByTagName('item_number')[0].textContent;
+                            const itemName = items[i].getElementsByTagName('item_name')[0].textContent;
+                            const itemPrice = parseFloat(items[i].getElementsByTagName('item_price')[0].textContent).toFixed(2);
+                            const description = items[i].getElementsByTagName('description')[0].textContent;
+
+                            const row = `
+                                <tr>
+                                    <td>${itemNumber}</td>
+                                    <td>${itemName}</td>
+                                    <td>${description.substring(0, 20)}...</td>
+                                    <td>$${itemPrice}</td>
+                                    <td>${quantityAvailable}</td>
+                                    <td><button class="button add-to-cart" onclick="addToCart('${itemNumber}', '${itemName}', ${itemPrice})">Add one to the cart</button></td>
+                                </tr>
+                            `;
+                            catalogTableBody.innerHTML += row;
+                        }
+                    }
+                    updateCartDisplay(); // Update the cart display after loading catalog
+                }
+            };
+            xhr.send();
+        }
+
+        // Function to check if the user is logged in
+        function checkLogin() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "redirect.php", true);
+            xhr.onload = function() {
+                if (xhr.status === 403) {
+                    // If unauthorized, redirect to login page
+                    window.location.href = "login.htm";
+                }
+                // If authorized, continue loading the catalog
+                else if (xhr.status === 200) {
+                    fetchCatalog(); // Call to load catalog if login check passes
+                }
+            };
+            xhr.send();
+        }
+
+        // Function to add item to the shopping cart
+        function addToCart(itemNumber, itemName, itemPrice) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'update_quantity.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const response = xhr.responseText.trim();
+                    // Update the session cart
+                    if (response === 'out_of_stock') {
+                        // If the item is out of stock, show an alert
+                        alert("Sorry, this item is not available for sale.");
+                    } else {
+                        // Update the session cart since the item is available
+                        if (!shoppingCart[itemNumber]) {
+                            shoppingCart[itemNumber] = { name: itemName, price: itemPrice, quantity: 1 };
+                        } else {
+                            shoppingCart[itemNumber].quantity++;
+                        }
+                        updateCartDisplay(); // Update cart display
+                    }
+                }else {
+                    alert("Error: " + xhr.responseText);
+                }
+            };
+            xhr.send(`item_number=${itemNumber}`); // Send item number to the server
+        }
+
+        // Function to update cart display
+        function updateCartDisplay() {
+            const cartTableBody = document.getElementById('cart-table-body');
+            cartTableBody.innerHTML = ''; // Clear existing rows
+            let totalAmount = 0;
+
+            for (const itemNumber in shoppingCart) {
+                const item = shoppingCart[itemNumber];
+                const row = `
+                    <tr>
+                        <td>${itemNumber}</td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td>${item.quantity}</td>
+                        <td><button class="button remove-from-cart" onclick="removeFromCart('${itemNumber}')">Remove from the cart</button></td>
+                    </tr>
+                `;
+                cartTableBody.innerHTML += row;
+                totalAmount += item.price * item.quantity;
+            }
+            document.getElementById('total-amount').textContent = `$${totalAmount.toFixed(2)}`;
+        }
+
+        // Function to remove item from the cart
+        function removeFromCart(itemNumber) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'update_quantity_remove.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    delete shoppingCart[itemNumber];
+                    updateCartDisplay();
+                } else {
+                    alert("Error: " + xhr.responseText);
+                }
+            };
+            xhr.send(`item_number=${itemNumber}&quantity=${shoppingCart[itemNumber].quantity}`); // Send the number and quantity to remove
+        }
+
+        // Function to confirm purchase
+        function confirmPurchase() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'confirm_purchase.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert("Your purchase has been confirmed!");
+                    shoppingCart = {}; // Clear cart after purchase
+                    updateCartDisplay();
+                } else {
+                    alert("Error: " + xhr.responseText);
+                }
+            };
+            const xmlCart = createXmlFromCart();
+            xhr.send(`cart=${encodeURIComponent(xmlCart)}`);
+        }
+
+        // Function to create XML from the shopping cart
+        function createXmlFromCart() {
+            let xml = '<?xml version="1.0"?><cart>';
+            for (const itemNumber in shoppingCart) {
+                const item = shoppingCart[itemNumber];
+                xml += `<item><item_number>${itemNumber}</item_number><item_name>${item.name}</item_name><item_price>${item.price}</item_price><quantity>${item.quantity}</quantity></item>`;
+            }
+            xml += '</cart>';
+            return xml;
+        }
+
+        // Function to cancel purchase
+        function cancelPurchase() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'cancel_purchase.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert("Your purchase request has been cancelled, welcome to shop next time.");
+                    shoppingCart = {}; // Clear cart after cancel
+                    updateCartDisplay();
+                } else {
+                    alert("Error: " + xhr.responseText);
+                }
+            };
+            const xmlCart = createXmlFromCart();
+            xhr.send(`cart=${encodeURIComponent(xmlCart)}`);
+        }
+        
+        function logout() {
+            if (Object.keys(shoppingCart).length !== 0){
+                cancelPurchase(); // Call cancel purchase on logout
+            }
+            setTimeout(() => {
+                window.location.href = "logout.htm"; // Redirect to logout after canceling
+            }, 1000); // Delay to allow for alert
+        }
+
+        window.onload = function() {
+            checkLogin();
+        };
+        // Periodically refresh the catalog
+        setInterval(fetchCatalog, 10000); // Refresh every 10 seconds
+
+    </script>
+</head>
+<body>
+    <a href="#" onclick="logout()">Log out</a>
+    <h1>Shopping Catalog</h1>
+    
+    <table border="1" style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+        <thead>
+            <tr style="background-color: #f4f4f4;">
+                <th>Item Number</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity Available</th>
+                <th>Add</th>
+            </tr>
+        </thead>
+        <tbody id="catalog-table-body">
+            <!-- Catalog items will be populated here -->
+        </tbody>
+    </table>
+
+    <h2>Shopping Cart</h2>
+    <table border="1" style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+        <thead>
+            <tr style="background-color: #f4f4f4;">
+                <th>Item Number</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody id="cart-table-body">
+            <!-- Cart items will be populated here -->
+        </tbody>
+    </table>
+    
+    <div style="font-weight: bold; font-size: 1.2em;">
+        Total: <span id="total-amount">$0.00</span>
+    </div>
+    
+    <button class="confirm-purchase" onclick="confirmPurchase()">Confirm Purchase</button>
+    <button class="cancel-purchase" onclick="cancelPurchase()">Cancel Purchase</button>
+</body>
+</html>
+
+
